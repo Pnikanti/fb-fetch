@@ -11,8 +11,9 @@ Fetch 💩 from Facebook feed and mangle it nicely
         ACCESS_TOKEN=ASD
 
 - python -m venv venv
+- source ./venv/bin/activate
 - pip install -r requirements.txt
 
 # RUNNING
-source ./venv/bin/activate
-python fb-fetch.py --help
+- source ./venv/bin/activate
+- python fb-fetch.py --help

@@ -43,9 +43,19 @@ def fetch(account_id: str, output_file: str):
         post = {}
         post["images"] = []
         post["videos"] = []
+        post["url"] = f"https://www.facebook.com/{item['id']}"
+        post["text"] = item["message"]
+        post["timestamp"] = int(datetime.strptime(item["created_time"], "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
         response = requests.get(f"{BASE_URL}/{item['id']}/attachments?access_token={page_access_token}")
-        attachments = response.json()["data"][0]
+
+        attachments = response.json()["data"]
+
+        if not attachments:
+            posts.append(post)
+            continue
+
+        attachments = attachments[0]
 
         if media := attachments.get("subattachments"):
             media = media["data"]
@@ -56,16 +66,11 @@ def fetch(account_id: str, output_file: str):
                     post["images"].append(med["media"]["image"]["src"])
                 else:
                     print(f"{med['type']} type not supported!")
-
         elif media := attachments.get("media"):
             post["images"].append(media["image"]["src"])
 
-        post["url"] = f"https://www.facebook.com/{item['id']}"
-        post["text"] = item["message"]
-        post["timestamp"] = int(datetime.strptime(item["created_time"], "%Y-%m-%dT%H:%M:%S%z").timestamp())
-        
         posts.append(post)
-
+        
     posts = json.dumps(posts, indent=4, ensure_ascii=False)
     print(posts)
 
